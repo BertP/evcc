@@ -9,6 +9,8 @@ import (
 	"golang.org/x/oauth2"
 )
 
+var Instance *Controller
+
 type Controller struct {
 	mu          sync.Mutex
 	log         *util.Logger

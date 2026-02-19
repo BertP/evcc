@@ -342,6 +342,13 @@ func runRoot(cmd *cobra.Command, args []string) {
 		}
 	}
 
+	// setup Miele
+	if err == nil {
+		if err := configureMiele(httpd); err != nil {
+			log.ERROR.Println("failed to configure miele:", err)
+		}
+	}
+
 	// setup MCP
 	if viper.GetBool("mcp") {
 		router := httpd.Router()

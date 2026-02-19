@@ -8,6 +8,7 @@ __debug_bin*
 *.py
 *.log
 *.json
+miele.json
 !i18n/*.json
 !.devcontainer/devcontainer.json
 *.yaml

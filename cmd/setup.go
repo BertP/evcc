@@ -3,8 +3,10 @@ package cmd
 import (
 	"cmp"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"regexp"
 	"slices"
@@ -43,6 +45,7 @@ import (
 	"github.com/evcc-io/evcc/util/config"
 	"github.com/evcc-io/evcc/util/locale"
 	"github.com/evcc-io/evcc/util/machine"
+	"github.com/evcc-io/evcc/util/miele"
 	"github.com/evcc-io/evcc/util/request"
 	_ "github.com/evcc-io/evcc/util/service"
 	"github.com/evcc-io/evcc/util/sponsor"
@@ -1215,4 +1218,73 @@ func configureAuth(router *mux.Router, paramC chan<- util.Param) {
 func isExperimental() bool {
 	b, _ := settings.Bool(keys.Experimental)
 	return b
+}
+
+// setup Miele
+func configureMiele(httpd *server.HTTPd) error {
+	// Look for miele.json in current directory or config location
+	// We'll trust LoadCredentials to handle file finding if we give it a relative path working from execution dir
+	// or we could check common locations.
+	credsFile := "miele.json"
+
+	if _, err := os.Stat(credsFile); errors.Is(err, os.ErrNotExist) {
+		return nil // Not configured
+	}
+
+	// This is a bit hacky to construct the callback URL from the config,
+	// assuming standard port/host if not easily accessible here without plumbing.
+	// But we have httpd.Addr, though that might be :7070.
+	// We really need the external URL.
+	// Docker might need explicit configuration for this.
+	// For now, we use a placeholder or derive from network config if passed,
+	// but this function signature only has httpd.
+	// Let's assume the user configures the RedirectURI in miele.json too or we use a default relative to request?
+	// The Controller expects a redirectURI.
+	// Let's use a sane default for now:
+	redirectURI := "http://localhost:7070/api/miele/callback"
+
+	c, err := miele.NewController(credsFile, redirectURI)
+	if err != nil {
+		return fmt.Errorf("failed configuring miele: %w", err)
+	}
+
+	miele.Instance = c
+
+	// Register routes
+	router := httpd.Router()
+	api := router.PathPrefix("/api/miele").Subrouter()
+
+	api.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+		state := "random-state" // TODO: Secure state generation
+		http.Redirect(w, r, c.GetAuthURL(state), http.StatusFound)
+	}).Methods("GET")
+
+	api.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
+		code := r.URL.Query().Get("code")
+		if code == "" {
+			http.Error(w, "missing code", http.StatusBadRequest)
+			return
+		}
+
+		token, err := c.Exchange(r.Context(), code)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("failed to exchange code: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		// TODO: Save token persistantly?
+		// For now just in memory in controller
+		_ = token
+
+		fmt.Fprintf(w, "Miele Connected! You can close this window.")
+	}).Methods("GET")
+
+	api.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {
+		status := map[string]bool{"connected": c.IsConnected()}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(status)
+	}).Methods("GET")
+
+	log.INFO.Println("Miele integration configured")
+	return nil
 }

@@ -1,0 +1,26 @@
+# Tasks
+
+- [x] Read and understand MISSIONPROMPT.md
+- [/] Initialize project environment
+  - [/] Draft implementation plan for core extensions
+  - [ ] Research "White goods" category implementation
+  - [ ] Research load shifting logic in evcc
+  - [ ] Research Miele 3rd Party API integration
+- [ ] Implement Extended Functionality
+  - [ ] Add White goods device category
+  - [ ] Implement variable load logic for white goods
+  - [ ] Implement load shifting logic
+  - [ ] Implement REST API for white goods
+  - [ ] Implement REST API for white goods
+  - [/] Implement Miele 3rd Party API integration (Step 1)
+    - [x] Establish connection to Miele API
+    - [x] Implement Token retrieval and refresh
+    - [x] Store Client_ID/Secret in separate file
+    - [x] Create separate integration for API connection
+    - [ ] Display connection status on integration card
+- [ ] Containerization & Deployment
+  - [x] Create docker-compose.yml
+  - [x] Create DEPLOYMENT.md
+  - [x] Create tracking.md
+  - [ ] Optimize Docker setup for Ubuntu target
+  - [ ] Streamline deployment to server
