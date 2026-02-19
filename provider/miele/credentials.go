@@ -9,6 +9,7 @@ import (
 type Credentials struct {
 	ClientID     string `json:"client_id"`
 	ClientSecret string `json:"client_secret"`
+	RedirectURI  string `json:"redirect_uri,omitempty"`
 }
 
 func LoadCredentials(path string) (*Credentials, error) {

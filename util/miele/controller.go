@@ -25,6 +25,10 @@ func NewController(path, redirectURI string) (*Controller, error) {
 		return nil, err
 	}
 
+	if creds.RedirectURI != "" {
+		redirectURI = creds.RedirectURI
+	}
+
 	client := miele.NewClient(creds.ClientID, creds.ClientSecret, redirectURI)
 
 	c := &Controller{
