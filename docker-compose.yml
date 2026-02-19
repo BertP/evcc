@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  evcc:
+    # Use the official image for the server deployment or build locally
+    # image: evcc/evcc:latest
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: evcc
+    restart: unless-stopped
+    ports:
+      - "7070:7070" # UI and API
+      - "8887:8887" # OCPP
+      - "5353:5353/udp" # mDNS
+      - "4712:4712" # EEBUS
+    volumes:
+      - ./evcc.yaml:/etc/evcc.yaml
+      - ./evcc.db:/root/.evcc/evcc.db
+    network_mode: "host" # Recommended for mDNS and hardware integration discovery
+    environment:
+      - PUID=1000
+      - PGID=1000
