@@ -66,4 +66,4 @@ docker compose up -d
 ### Troubleshooting
 
 - **USB Devices**: If using USB adapters (RS485), ensure they are passed through to the container or use `network_mode: host`.
-- **Permission Issues**: Check `PUID` and `PGID` in `docker-compose.yml` if you encounter file permission errors with the database or config.
+- **Permission Issues**: Ensure the `./data` directory on the host is writable by the user running the container (or root, if defaults are used).

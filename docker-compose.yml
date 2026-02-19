@@ -16,8 +16,7 @@ services:
       - "4712:4712" # EEBUS
     volumes:
       - ./evcc.yaml:/etc/evcc.yaml
-      - ./evcc.db:/root/.evcc/evcc.db
+      - ./data:/var/lib/evcc
     network_mode: "host" # Recommended for mDNS and hardware integration discovery
     environment:
-      - PUID=1000
-      - PGID=1000
+      - EVCC_DATABASE_DSN=/var/lib/evcc/evcc.db
