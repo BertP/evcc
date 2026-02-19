@@ -51,7 +51,12 @@ RUN --mount=type=cache,target=${GOMODCACHE} make install
 # prepare
 COPY . .
 RUN make patch-asn1
-RUN --mount=type=cache,target=${GOMODCACHE} make assets
+RUN --mount=type=cache,target=${GOMODCACHE} \
+    if [ ! -f "api/feature_enumer.go" ]; then \
+    make assets; \
+    else \
+    echo "Skipping make assets (already generated)"; \
+    fi
 
 # copy ui
 COPY --from=node /build/dist /build/dist

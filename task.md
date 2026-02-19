@@ -22,5 +22,5 @@
   - [x] Create docker-compose.yml
   - [x] Create DEPLOYMENT.md
   - [x] Create tracking.md
-  - [ ] Optimize Docker setup for Ubuntu target
+  - [x] Optimize Docker setup for Ubuntu target
   - [ ] Streamline deployment to server
