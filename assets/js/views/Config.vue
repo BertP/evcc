@@ -265,6 +265,21 @@
 							<DeviceTags :tags="hemsTags" />
 						</template>
 					</DeviceCard>
+					<DeviceCard
+						title="Miele"
+						:error="false"
+						:unconfigured="!miele.connected"
+						data-testid="miele"
+						@edit="handleMieleAction"
+					>
+						<template #icon>
+							<!-- Placeholder icon or maybe a generic plugin icon -->
+							<span class="d-flex align-items-center justify-content-center bg-dark text-white rounded-circle" style="width: 24px; height: 24px; font-weight: bold;">M</span>
+						</template>
+						<template #tags>
+							<DeviceTags :tags="mieleTags" />
+						</template>
+					</DeviceCard>
 				</div>
 
 				<h2 class="my-4 mt-5">{{ $t("config.section.services") }}</h2>
@@ -511,6 +526,7 @@ export default defineComponent({
 				aux: null as string[] | null,
 				ext: null as string[] | null,
 			} as SiteConfig,
+			miele: { connected: false },
 			deviceValueTimeout: null as Timeout,
 			deviceValues: {
 				meter: {},
@@ -604,6 +620,14 @@ export default defineComponent({
 			return {
 				broker: { value: broker },
 				topic: { value: topic },
+			};
+		},
+		mieleTags(): DeviceTags {
+			return {
+				connected: { 
+					value: this.miele.connected ? "Connected" : "Disconnected",
+					options: { label: this.miele.connected ? "Connected" : "Disconnected", class: this.miele.connected ? "text-success" : "text-danger" }
+				},
 			};
 		},
 		influxTags(): DeviceTags {
@@ -742,6 +766,7 @@ export default defineComponent({
 			await this.loadChargers();
 			await this.loadLoadpoints();
 			await this.loadCircuits();
+			await this.loadMiele();
 			await this.loadDirty();
 			this.updateValues();
 		},
@@ -785,6 +810,14 @@ export default defineComponent({
 				this.site = data;
 			}
 		},
+		async loadMiele() {
+			try {
+				const response = await api.get("/miele/status");
+				this.miele = response.data;
+			} catch (e) {
+				console.error("failed to load miele status", e);
+			}
+		},
 		async loadLoadpoints() {
 			this.loadpoints = (await this.loadConfig("loadpoints")) || [];
 		},
@@ -824,6 +857,7 @@ export default defineComponent({
 						break;
 					case "ext":
 						if (!this.site.ext) this.site.ext = [];
+						if (!this.site.ext) this.site.ext = [];
 						this.site.ext.push(name);
 						this.saveSite(type);
 						break;
@@ -837,6 +871,11 @@ export default defineComponent({
 			await this.loadMeters();
 			await this.loadDirty();
 			this.updateValues();
+		},
+		handleMieleAction() {
+			if (!this.miele.connected) {
+				window.location.href = "/api/miele/login";
+			}
 		},
 		async chargerChanged() {
 			await this.loadChargers();

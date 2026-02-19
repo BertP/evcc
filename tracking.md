@@ -17,3 +17,4 @@ This document tracks all significant changes and commits made to the project, in
 | 2026-02-19 16:55 | implemented auth flow in Miele controller       | `util/miele/controller.go`                                        |
 | 2026-02-19 17:15 | Wired Miele integration in cmd/root.go          | `cmd/root.go`                                                     |
 | 2026-02-19 17:20 | Fixed compilation for Miele wiring              | `cmd/setup.go`                                                    |
+| 2026-02-19 17:35 | Added Miele Integration Card to UI              | `assets/js/views/Config.vue`                                      |

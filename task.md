@@ -17,7 +17,7 @@
     - [x] Implement Token retrieval and refresh
     - [x] Store Client_ID/Secret in separate file
     - [x] Create separate integration for API connection
-    - [ ] Display connection status on integration card
+    - [x] Display connection status on integration card
 - [ ] Containerization & Deployment
   - [x] Create docker-compose.yml
   - [x] Create DEPLOYMENT.md
