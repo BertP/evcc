@@ -11,3 +11,4 @@ This document tracks all significant changes and commits made to the project, in
 | 2026-02-19 15:59 | Synced repository with remote             | All committed files                                               |
 | 2026-02-19 16:15 | Fixed database path in docker-compose.yml | `docker-compose.yml`                                              |
 | 2026-02-19 16:20 | Updated troubleshooting in DEPLOYMENT.md  | `DEPLOYMENT.md`                                                   |
+| 2026-02-19 16:22 | Removed demo configuration from evcc.yaml | `evcc.yaml`                                                       |
