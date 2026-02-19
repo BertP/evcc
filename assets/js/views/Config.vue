@@ -270,6 +270,7 @@
 						:error="false"
 						:unconfigured="!miele.connected"
 						data-testid="miele"
+						editable
 						@edit="handleMieleAction"
 					>
 						<template #icon>

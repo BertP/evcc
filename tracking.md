@@ -20,3 +20,4 @@ This document tracks all significant changes and commits made to the project, in
 | 2026-02-19 17:35 | Added Miele Integration Card to UI              | `assets/js/views/Config.vue`                                      |
 | 2026-02-19 17:45 | Optimized Dockerfile to skip `make assets`      | `Dockerfile`                                                      |
 | 2026-02-19 17:50 | Provided `miele.json` template                  | `miele.json`                                                      |
+| 2026-02-19 17:55 | Fixed Miele UI interaction and labels           | `assets/js/views/Config.vue`, `i18n/*.json`                       |

@@ -119,6 +119,7 @@
       "chargedEnergy": "Charged",
       "co2": "Grid CO₂",
       "configured": "Configured",
+      "connected": "Connection",
       "connections": "Connections",
       "controllable": "Controllable",
       "currency": "Currency",
