@@ -21,3 +21,5 @@ This document tracks all significant changes and commits made to the project, in
 | 2026-02-19 17:45 | Optimized Dockerfile to skip `make assets`      | `Dockerfile`                                                      |
 | 2026-02-19 17:50 | Provided `miele.json` template                  | `miele.json`                                                      |
 | 2026-02-19 17:55 | Fixed Miele UI interaction and labels           | `assets/js/views/Config.vue`, `i18n/*.json`                       |
+| 2026-02-19 18:00 | Added `miele.json` mount to Docker Compose      | `docker-compose.yml`                                              |
+| 2026-02-19 18:00 | Added debug logging for Miele setup             | `cmd/setup.go`                                                    |

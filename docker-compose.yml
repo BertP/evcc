@@ -16,6 +16,7 @@ services:
       - "4712:4712" # EEBUS
     volumes:
       - ./evcc.yaml:/etc/evcc.yaml
+      - ./miele.json:/app/miele.json
       - ./data:/var/lib/evcc
     network_mode: "host" # Recommended for mDNS and hardware integration discovery
     environment:

@@ -1228,6 +1228,7 @@ func configureMiele(httpd *server.HTTPd) error {
 	credsFile := "miele.json"
 
 	if _, err := os.Stat(credsFile); errors.Is(err, os.ErrNotExist) {
+		log.WARN.Println("miele.json not found, skipping Miele integration")
 		return nil // Not configured
 	}
 
