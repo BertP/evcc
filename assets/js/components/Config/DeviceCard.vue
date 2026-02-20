@@ -30,6 +30,7 @@
 			<hr class="my-3 divide" />
 			<slot name="tags" />
 		</div>
+		<slot name="extra" />
 	</div>
 </template>
 

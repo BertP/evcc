@@ -108,6 +108,8 @@
     "deviceValue": {
       "amount": "Amount",
       "broker": "Broker",
+      "activePhases": "Active phases",
+      "appliances": "Appliances",
       "bucket": "Bucket",
       "capacity": "Capacity",
       "chargeStatus": "Status",
