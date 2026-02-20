@@ -232,6 +232,7 @@
 				</div>
 
 				<h2 class="my-4 mt-5">{{ $t("config.section.integrations") }}</h2>
+				<div class="p-0 config-list">
 					<AuthProvidersCard
 						:providers="authProviders"
 						data-testid="auth-providers"
