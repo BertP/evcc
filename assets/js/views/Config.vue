@@ -901,11 +901,10 @@ export default defineComponent({
 			return types[value] || "Unknown Appliance";
 		},
 		async configureMieleDevice(device: any) {
-			const type = this.applianceType(device.ident.typ.value_raw);
+			const type = this.applianceType(device.ident.type?.value_raw);
 			const title = device.ident.deviceName || `${type} ${device.ident.deviceSN}`;
 			openModal("whitegood", {
-				type: "miele",
-				choices: [device.ident.deviceSN, title],
+				choices: ["miele", device.ident.deviceSN, title],
 			});
 		},
 		async loadLoadpoints() {

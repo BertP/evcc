@@ -55,8 +55,8 @@ export default defineComponent({
 		},
 		initialValues(): DeviceValues {
 			const modal = getModal("whitegood");
-			if (modal?.type === "miele" && modal.choices?.length === 2) {
-				const [device, title] = modal.choices;
+			if (modal?.choices?.length === 3 && modal.choices[0] === "miele") {
+				const [, device, title] = modal.choices;
 				return {
 					...initialValues,
 					template: "miele",
