@@ -1224,6 +1224,8 @@ func isExperimental() bool {
 
 // setup Miele
 func configureMiele(httpd *server.HTTPd) error {
+	log := util.NewLogger("miele")
+
 	// Look for miele.json in current directory or config location
 	credsFile := "miele.json"
 
