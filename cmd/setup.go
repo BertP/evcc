@@ -1250,11 +1250,24 @@ func configureMiele(httpd *server.HTTPd) error {
 	router := httpd.Router()
 	api := router.PathPrefix("/api/miele").Subrouter()
 
+	getRedirectURI := func(r *http.Request) string {
+		// prefer explicitly configured external url
+		if externalURL := viper.GetString("network.externalurl"); externalURL != "" {
+			return fmt.Sprintf("%s/api/miele/callback", strings.TrimSuffix(externalURL, "/"))
+		}
+		// fallback to request host
+		proto := "http"
+		if r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https" {
+			proto = "https"
+		}
+		return fmt.Sprintf("%s://%s/api/miele/callback", proto, r.Host)
+	}
+
 	api.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
 		b := make([]byte, 16)
 		rand.Read(b)
 		state := base64.URLEncoding.EncodeToString(b)
-		http.Redirect(w, r, c.GetAuthURL(state), http.StatusFound)
+		http.Redirect(w, r, c.GetAuthURL(getRedirectURI(r), state), http.StatusFound)
 	}).Methods("GET")
 
 	api.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
@@ -1269,7 +1282,7 @@ func configureMiele(httpd *server.HTTPd) error {
 			return
 		}
 
-		_, err := c.Exchange(r.Context(), code)
+		_, err := c.Exchange(r.Context(), getRedirectURI(r), code)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("failed to exchange code: %v", err), http.StatusInternalServerError)
 			return

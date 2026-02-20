@@ -37,8 +37,20 @@ func NewClient(clientID, clientSecret, redirectURI string) *Client {
 	}
 }
 
-func (c *Client) Exchange(ctx context.Context, code string) (*oauth2.Token, error) {
-	return c.conf.Exchange(ctx, code)
+func (c *Client) SetRedirectURL(url string) {
+	c.conf.RedirectURL = url
+}
+
+func (c *Client) config(redirectURI string) *oauth2.Config {
+	conf := *c.conf
+	if redirectURI != "" {
+		conf.RedirectURL = redirectURI
+	}
+	return &conf
+}
+
+func (c *Client) Exchange(ctx context.Context, redirectURI, code string) (*oauth2.Token, error) {
+	return c.config(redirectURI).Exchange(ctx, code)
 }
 
 func (c *Client) TokenSource(ctx context.Context, token *oauth2.Token) oauth2.TokenSource {
@@ -50,6 +62,6 @@ func (c *Client) Client(ctx context.Context, token *oauth2.Token) *http.Client {
 	return c.conf.Client(ctx, token)
 }
 
-func (c *Client) AuthCodeURL(state string, opts ...oauth2.AuthCodeOption) string {
-	return c.conf.AuthCodeURL(state, opts...)
+func (c *Client) AuthCodeURL(redirectURI, state string, opts ...oauth2.AuthCodeOption) string {
+	return c.config(redirectURI).AuthCodeURL(state, opts...)
 }

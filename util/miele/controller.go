@@ -48,13 +48,13 @@ func NewController(path, redirectURI string) (*Controller, error) {
 	return c, nil
 }
 
-func (c *Controller) GetAuthURL(state string) string {
+func (c *Controller) GetAuthURL(redirectURI, state string) string {
 	// AccessTypeOffline requests a refresh token
-	return c.client.AuthCodeURL(state, oauth2.AccessTypeOffline)
+	return c.client.AuthCodeURL(redirectURI, state, oauth2.AccessTypeOffline)
 }
 
-func (c *Controller) Exchange(ctx context.Context, code string) (*oauth2.Token, error) {
-	token, err := c.client.Exchange(ctx, code)
+func (c *Controller) Exchange(ctx context.Context, redirectURI, code string) (*oauth2.Token, error) {
+	token, err := c.client.Exchange(ctx, redirectURI, code)
 	if err != nil {
 		return nil, err
 	}
