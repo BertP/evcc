@@ -7,6 +7,9 @@ group: switchsockets
 params:
   - name: device
     required: true
+    description:
+      de: Gerät
+      en: Device
     help:
       de: Seriennummer des Geräts
       en: Serial number of the appliance
