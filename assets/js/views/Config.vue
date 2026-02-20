@@ -188,7 +188,7 @@
 					</DeviceCard>
 
 					<DeviceCard
-						title="Miele"
+						:title="'Miele'"
 						:error="false"
 						:unconfigured="!miele?.connected"
 						data-testid="miele"
@@ -201,32 +201,6 @@
 								style="width: 24px; height: 24px; font-weight: bold"
 								>M</span
 							>
-						</template>
-						<template #tags>
-							<DeviceTags :tags="mieleTags" />
-						</template>
-						<template #extra>
-							<div v-if="miele?.connected && mieleDevices?.length > 0" class="mt-3 px-3 pb-3">
-								<p class="small text-muted mb-2">Discovered Appliances:</p>
-								<div class="list-group list-group-flush border rounded">
-									<div
-										v-for="device in mieleDevices"
-										:key="device.ident.deviceSN"
-										class="list-group-item d-flex justify-content-between align-items-center p-2"
-									>
-										<span class="small"
-											>{{ applianceType(device.ident.typ.value_raw) }}:
-											{{ device.ident.deviceSN }}</span
-										>
-										<button
-											class="btn btn-sm btn-outline-primary py-0"
-											@click.stop="configureMieleDevice(device)"
-										>
-											{{ $t("config.general.add") }}
-										</button>
-									</div>
-								</div>
-							</div>
 						</template>
 					</DeviceCard>
 				</div>
