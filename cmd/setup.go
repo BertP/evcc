@@ -1317,6 +1317,19 @@ func configureMiele(httpd *server.HTTPd) error {
 		json.NewEncoder(w).Encode(status)
 	}).Methods("GET")
 
+	api.HandleFunc("/devices", func(w http.ResponseWriter, r *http.Request) {
+		log.DEBUG.Println("GET /api/miele/devices")
+		devices, err := c.GetDevices(r.Context())
+		if err != nil {
+			log.ERROR.Printf("fetching devices failed: %v", err)
+			http.Error(w, fmt.Sprintf("failed to fetch devices: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(devices)
+	}).Methods("GET")
+
 	log.INFO.Println("Miele integration configured")
 	return nil
 }

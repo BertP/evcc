@@ -31,3 +31,15 @@
 - [x] Implement detailed debug and log information
 
 ## Step 2: Build Miele Appliance Konfiguration Card Connection
+
+## Logic for Device Selection
+- [x] identify available devices via API
+- [x] only ident>type>value_raw =[1,2,7] (Dishwasher, Dryer, Washing Machine) are valid devices 
+## UI / Configuration Card
+- [] add selector for Device
+- [] Implement the logic for device selection
+- [] Add Miele as Manufacturer in the device configuration
+- [] Add Miele as Device Type in the device configuration
+- [] Add Miele as Device Model in the device configuration
+- [] Add Miele as Device Serial Number in the device configuration
+

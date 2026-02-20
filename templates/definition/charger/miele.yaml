@@ -1,0 +1,15 @@
+template: miele
+products:
+  - brand: Miele
+    description:
+      generic: Appliance
+group: switchsockets
+params:
+  - name: device
+    required: true
+    help:
+      de: Seriennummer des Geräts
+      en: Serial number of the appliance
+render: |
+  type: miele
+  device: {{ .device }}

@@ -274,11 +274,37 @@
 						@edit="handleMieleAction"
 					>
 						<template #icon>
-							<!-- Placeholder icon or maybe a generic plugin icon -->
-							<span class="d-flex align-items-center justify-content-center bg-dark text-white rounded-circle" style="width: 24px; height: 24px; font-weight: bold;">M</span>
+							<span
+								class="d-flex align-items-center justify-content-center bg-dark text-white rounded-circle"
+								style="width: 24px; height: 24px; font-weight: bold"
+								>M</span
+							>
 						</template>
 						<template #tags>
 							<DeviceTags :tags="mieleTags" />
+						</template>
+						<template v-if="miele.connected && mieleDevices.length > 0" #extra>
+							<div class="mt-3">
+								<p class="small text-muted mb-2">Discovered Appliances:</p>
+								<div class="list-group list-group-flush border rounded">
+									<div
+										v-for="device in mieleDevices"
+										:key="device.ident.deviceSN"
+										class="list-group-item d-flex justify-content-between align-items-center p-2"
+									>
+										<span class="small"
+											>{{ applianceType(device.ident.typ.value_raw) }}:
+											{{ device.ident.deviceSN }}</span
+										>
+										<button
+											class="btn btn-sm btn-outline-primary py-0"
+											@click.stop="configureMieleDevice(device)"
+										>
+											Add
+										</button>
+									</div>
+								</div>
+							</div>
 						</template>
 					</DeviceCard>
 				</div>
@@ -528,6 +554,7 @@ export default defineComponent({
 				ext: null as string[] | null,
 			} as SiteConfig,
 			miele: { connected: false },
+			mieleDevices: [] as any[],
 			deviceValueTimeout: null as Timeout,
 			deviceValues: {
 				meter: {},
@@ -624,12 +651,19 @@ export default defineComponent({
 			};
 		},
 		mieleTags(): DeviceTags {
-			return {
-				connected: { 
+			const tags: DeviceTags = {
+				connected: {
 					value: this.miele.connected ? "Connected" : "Disconnected",
-					options: { label: this.miele.connected ? "Connected" : "Disconnected", class: this.miele.connected ? "text-success" : "text-danger" }
+					options: {
+						label: this.miele.connected ? "Connected" : "Disconnected",
+						class: this.miele.connected ? "text-success" : "text-danger",
+					},
 				},
 			};
+			if (this.mieleDevices.length > 0) {
+				tags.appliances = { value: this.mieleDevices.length };
+			}
+			return tags;
 		},
 		influxTags(): DeviceTags {
 			const { url, database, org } = store.state?.influx || {};
@@ -815,8 +849,44 @@ export default defineComponent({
 			try {
 				const response = await api.get("/miele/status");
 				this.miele = response.data;
+				if (this.miele.connected) {
+					await this.loadMieleDevices();
+				}
 			} catch (e) {
 				console.error("failed to load miele status", e);
+			}
+		},
+		async loadMieleDevices() {
+			try {
+				const response = await api.get("/miele/devices");
+				this.mieleDevices = response.data || [];
+			} catch (e) {
+				console.error("failed to load miele devices", e);
+			}
+		},
+		applianceType(value: number) {
+			const types: Record<number, string> = {
+				1: "Washing Machine",
+				2: "Dryer",
+				7: "Dishwasher",
+			};
+			return types[value] || "Unknown Appliance";
+		},
+		async configureMieleDevice(device: any) {
+			const type = this.applianceType(device.ident.typ.value_raw);
+			const title = device.ident.deviceName || `${type} ${device.ident.deviceSN}`;
+			const data = {
+				template: "miele",
+				device: device.ident.deviceSN,
+				title: title,
+			};
+
+			try {
+				await api.post("/config/devices/charger", data);
+				await this.loadChargers();
+				await this.loadDirty();
+			} catch (e) {
+				console.error("failed to configure miele device", e);
 			}
 		},
 		async loadLoadpoints() {

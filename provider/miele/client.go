@@ -9,6 +9,17 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// Device is the Miele appliance identification and status
+type Device struct {
+	Ident struct {
+		Typ struct {
+			ValueRaw int `json:"value_raw"`
+		} `json:"type"`
+		DeviceSN   string `json:"deviceSN"`
+		DeviceName string `json:"deviceName"`
+	} `json:"ident"`
+}
+
 // Endpoints
 const (
 	AuthURL  = "https://auth.domestic.miele-iot.com/partner/realms/mcs/protocol/openid-connect/auth"
@@ -69,4 +80,19 @@ func (c *Client) Client(ctx context.Context, token *oauth2.Token) *http.Client {
 func (c *Client) AuthCodeURL(redirectURI, state string, opts ...oauth2.AuthCodeOption) string {
 	c.log.DEBUG.Printf("generating auth code URL (redirect: %s)", redirectURI)
 	return c.config(redirectURI).AuthCodeURL(state, opts...)
+}
+
+// GetDevices returns the list of Miele appliances
+func (c *Client) GetDevices(ctx context.Context, token *oauth2.Token) (map[string]Device, error) {
+	var res map[string]Device
+	url := ApiURL + "/devices"
+	req, err := request.New(http.MethodGet, url, nil, request.AcceptJSON)
+	if err != nil {
+		return nil, err
+	}
+
+	client := c.Client(ctx, token)
+	helper := &request.Helper{Client: client}
+	err = helper.DoJSON(req, &res)
+	return res, err
 }

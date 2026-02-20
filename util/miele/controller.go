@@ -2,6 +2,7 @@ package miele
 
 import (
 	"context"
+	"errors"
 	"sync"
 
 	"github.com/evcc-io/evcc/provider/miele"
@@ -96,4 +97,35 @@ func (c *Controller) Logout() {
 	} else {
 		c.log.DEBUG.Println("deleted Miele token from database")
 	}
+}
+
+func (c *Controller) GetDevices(ctx context.Context) ([]miele.Device, error) {
+	c.mu.Lock()
+	ts := c.tokenSource
+	c.mu.Unlock()
+
+	if ts == nil {
+		return nil, errors.New("not connected")
+	}
+
+	token, err := ts.Token()
+	if err != nil {
+		return nil, err
+	}
+
+	devicesMap, err := c.client.GetDevices(ctx, token)
+	if err != nil {
+		return nil, err
+	}
+
+	var res []miele.Device
+	for _, dev := range devicesMap {
+		typ := dev.Ident.Typ.ValueRaw
+		// 1: Washing Machine, 2: Dryer, 7: Dishwasher
+		if typ == 1 || typ == 2 || typ == 7 {
+			res = append(res, dev)
+		}
+	}
+
+	return res, nil
 }
