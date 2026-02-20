@@ -163,8 +163,30 @@
 						@click="openModal('meter', { choices: ['aux', 'ext'] })"
 					/>
 				</div>
-				<h2 class="my-4 mt-5">{{ $t("config.section.integrations") }}</h2>
+				<h2 class="my-4 mt-5">{{ $t("config.section.whitegoods") }}</h2>
 				<div class="p-0 config-list">
+					<DeviceCard
+						v-for="whitegood in whitegoods"
+						:key="whitegood.name"
+						:title="whitegood.config?.title || whitegood.name"
+						:name="whitegood.name"
+						editable
+						:error="hasDeviceError('whitegood', whitegood.name)"
+						data-testid="whitegood"
+						@edit="openModal('whitegood', { id: whitegood.id })"
+					>
+						<template #icon>
+							<span
+								class="d-flex align-items-center justify-content-center bg-dark text-white rounded-circle"
+								style="width: 24px; height: 24px; font-weight: bold"
+								>W</span
+							>
+						</template>
+						<template #tags>
+							<DeviceTags :tags="deviceTags('whitegood', whitegood.name)" />
+						</template>
+					</DeviceCard>
+
 					<DeviceCard
 						title="Miele"
 						:error="false"
@@ -207,6 +229,9 @@
 							</div>
 						</template>
 					</DeviceCard>
+				</div>
+
+				<h2 class="my-4 mt-5">{{ $t("config.section.integrations") }}</h2>
 					<AuthProvidersCard
 						:providers="authProviders"
 						data-testid="auth-providers"
