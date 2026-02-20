@@ -623,7 +623,8 @@
       "meter": "Solar & Battery",
       "services": "Services",
       "system": "System",
-      "vehicles": "Vehicles"
+      "vehicles": "Vehicles",
+      "whitegoods": "White Goods"
     },
     "shm": {
       "cardTitle": "Sunny Home Manager",
@@ -743,6 +744,10 @@
       "titleAdd": "Add Vehicle",
       "titleEdit": "Edit Vehicle",
       "validateSave": "Validate & save"
+    },
+    "whitegood": {
+      "titleAdd": "Add Appliance",
+      "titleEdit": "Edit Appliance"
     }
   },
   "footer": {

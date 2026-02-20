@@ -14,6 +14,7 @@ var instance struct {
 	vehicles   *handler[api.Vehicle]
 	circuits   *handler[api.Circuit]
 	messengers *handler[api.Messenger]
+	whitegoods *handler[api.Charger] // TODO use specific interface if needed
 	loadpoints *handler[loadpoint.API]
 }
 
@@ -27,6 +28,7 @@ func Reset() {
 	instance.vehicles = &handler[api.Vehicle]{topic: "vehicle"}
 	instance.circuits = &handler[api.Circuit]{topic: "circuit"}
 	instance.messengers = &handler[api.Messenger]{topic: "messenger"}
+	instance.whitegoods = &handler[api.Charger]{topic: "whitegood"}
 	instance.loadpoints = &handler[loadpoint.API]{topic: "loadpoint"}
 }
 
@@ -56,6 +58,10 @@ func Messengers() Handler[api.Messenger] {
 
 func Circuits() Handler[api.Circuit] {
 	return instance.circuits
+}
+
+func Whitegoods() Handler[api.Charger] {
+	return instance.whitegoods
 }
 
 func Loadpoints() Handler[loadpoint.API] {

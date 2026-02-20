@@ -621,9 +621,10 @@
       "integrations": "Integrationen",
       "loadpoints": "Laden & Heizen",
       "meter": "PV & Batterie",
-      "services": "Dienste",
+      "services": "Services",
       "system": "System",
-      "vehicles": "Fahrzeuge"
+      "vehicles": "Vehicles",
+      "whitegoods": "Haushaltsgeräte"
     },
     "shm": {
       "cardTitle": "Sunny Home Manager",
@@ -743,6 +744,10 @@
       "titleAdd": "Fahrzeug hinzufügen",
       "titleEdit": "Fahrzeug bearbeiten",
       "validateSave": "Prüfen & speichern"
+    },
+    "whitegood": {
+      "titleAdd": "Haushaltsgerät hinzufügen",
+      "titleEdit": "Haushaltsgerät bearbeiten"
     }
   },
   "footer": {

@@ -300,7 +300,7 @@
 											class="btn btn-sm btn-outline-primary py-0"
 											@click.stop="configureMieleDevice(device)"
 										>
-											Add
+											{{ $t("config.general.add") }}
 										</button>
 									</div>
 								</div>
@@ -397,6 +397,7 @@
 				/>
 				<OcppModal :ocpp="ocpp" />
 				<BackupRestoreModal v-bind="backupRestoreProps" />
+				<WhitegoodModal :is-sponsor="isSponsor" @changed="whitegoodChanged" />
 				<PasswordModal update-mode />
 				<SponsorModal :error="hasClassError('sponsorship')" @changed="loadDirty" />
 			</div>
@@ -452,6 +453,7 @@ import TitleModal from "../components/Config/TitleModal.vue";
 import Header from "../components/Top/Header.vue";
 import VehicleIcon from "../components/VehicleIcon";
 import VehicleModal from "../components/Config/VehicleModal.vue";
+import WhitegoodModal from "../components/Config/WhitegoodModal.vue";
 import { defineComponent, type PropType } from "vue";
 import type {
 	Circuit,
@@ -531,6 +533,7 @@ export default defineComponent({
 		AuthSuccessBanner,
 		PasswordModal,
 		AuthProvidersCard,
+		WhitegoodModal,
 	},
 	mixins: [formatter, collector],
 	props: {
@@ -544,6 +547,7 @@ export default defineComponent({
 			meters: [] as ConfigMeter[],
 			loadpoints: [] as ConfigLoadpoint[],
 			chargers: [] as ConfigCharger[],
+			whitegoods: [] as any[],
 			circuits: [] as ConfigCircuit[],
 			site: {
 				grid: "",
@@ -561,6 +565,7 @@ export default defineComponent({
 				vehicle: {},
 				charger: {},
 				loadpoint: {},
+				whitegood: {},
 			} as DeviceValuesMap,
 			isComponentMounted: true,
 			isPageVisible: true,
@@ -661,7 +666,7 @@ export default defineComponent({
 				},
 			};
 			if (this.mieleDevices.length > 0) {
-				tags.appliances = { value: this.mieleDevices.length };
+				tags["appliances"] = { value: this.mieleDevices.length };
 			}
 			return tags;
 		},
@@ -799,6 +804,7 @@ export default defineComponent({
 			await this.loadMeters();
 			await this.loadSite();
 			await this.loadChargers();
+			await this.loadWhitegoods();
 			await this.loadLoadpoints();
 			await this.loadCircuits();
 			await this.loadMiele();
@@ -827,6 +833,9 @@ export default defineComponent({
 		},
 		async loadMeters() {
 			this.meters = (await this.loadConfig("devices/meter")) || [];
+		},
+		async loadWhitegoods() {
+			this.whitegoods = (await this.loadConfig("devices/whitegood")) || [];
 		},
 		async loadCircuits() {
 			const circuits = (await this.loadConfig("devices/circuit")) || [];
@@ -882,8 +891,8 @@ export default defineComponent({
 			};
 
 			try {
-				await api.post("/config/devices/charger", data);
-				await this.loadChargers();
+				await api.post("/config/devices/whitegood", data);
+				await this.loadWhitegoods();
 				await this.loadDirty();
 			} catch (e) {
 				console.error("failed to configure miele device", e);
@@ -962,6 +971,11 @@ export default defineComponent({
 			await this.loadDirty();
 			this.updateValues();
 		},
+		async whitegoodChanged() {
+			await this.loadWhitegoods();
+			await this.loadDirty();
+			this.updateValues();
+		},
 		async loadpointChanged() {
 			await this.loadLoadpoints();
 			this.loadDirty();
@@ -1018,6 +1032,7 @@ export default defineComponent({
 					messenger: this.messengers,
 					vehicle: this.vehicles,
 					charger: this.chargers,
+					whitegood: this.whitegoods,
 				} as Record<DeviceType, any[]>;
 				for (const type in devices) {
 					for (const device of devices[type as DeviceType]) {

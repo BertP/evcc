@@ -75,6 +75,9 @@ func devicesConfigHandler(w http.ResponseWriter, r *http.Request) {
 
 	case templates.Messenger:
 		res, err = devicesConfig(class, config.Messengers(), hidePrivate)
+
+	case templates.Whitegood:
+		res, err = devicesConfig(class, config.Whitegoods(), hidePrivate)
 	}
 
 	if err != nil {
@@ -198,6 +201,9 @@ func deviceConfigHandler(w http.ResponseWriter, r *http.Request) {
 
 	case templates.Messenger:
 		res, err = deviceConfig(class, id, config.Messengers(), hidePrivate)
+
+	case templates.Whitegood:
+		res, err = deviceConfig(class, id, config.Whitegoods(), hidePrivate)
 	}
 
 	if err != nil {
@@ -257,6 +263,9 @@ func deviceStatusHandler(w http.ResponseWriter, r *http.Request) {
 
 	case templates.Messenger:
 		instance, err = deviceStatus(name, config.Messengers())
+
+	case templates.Whitegood:
+		instance, err = deviceStatus(name, config.Whitegoods())
 	}
 
 	if err != nil {
@@ -319,6 +328,9 @@ func newDeviceHandler(w http.ResponseWriter, r *http.Request) {
 
 	case templates.Messenger:
 		conf, err = newDevice(ctx, class, req, messenger.NewFromConfig, config.Messengers(), force)
+
+	case templates.Whitegood:
+		conf, err = newDevice(ctx, class, req, charger.NewFromConfig, config.Whitegoods(), force)
 	}
 
 	if err != nil {
@@ -403,6 +415,9 @@ func updateDeviceHandler(w http.ResponseWriter, r *http.Request) {
 
 	case templates.Messenger:
 		err = updateDevice(ctx, id, class, req, messenger.NewFromConfig, config.Messengers(), force)
+
+	case templates.Whitegood:
+		err = updateDevice(ctx, id, class, req, charger.NewFromConfig, config.Whitegoods(), force)
 	}
 
 	setConfigDirty()
@@ -552,6 +567,9 @@ func deleteDeviceHandler(site site.API) func(w http.ResponseWriter, r *http.Requ
 
 		case templates.Messenger:
 			err = deleteDevice(id, config.Messengers())
+
+		case templates.Whitegood:
+			err = deleteDevice(id, config.Whitegoods())
 		}
 
 		setConfigDirty()
