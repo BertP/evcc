@@ -283,8 +283,8 @@
 						<template #tags>
 							<DeviceTags :tags="mieleTags" />
 						</template>
-						<template v-if="miele.connected && mieleDevices.length > 0" #extra>
-							<div class="mt-3">
+						<template #extra>
+							<div v-if="miele.connected && mieleDevices.length > 0" class="mt-3 px-3 pb-3">
 								<p class="small text-muted mb-2">Discovered Appliances:</p>
 								<div class="list-group list-group-flush border rounded">
 									<div
