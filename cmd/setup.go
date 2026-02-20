@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
 	"regexp"
 	"slices"
 	"strconv"
@@ -1225,14 +1226,22 @@ func isExperimental() bool {
 // setup Miele
 func configureMiele(httpd *server.HTTPd) error {
 	log := util.NewLogger("miele")
+	log.INFO.Println("Miele integration setup started")
 
 	// Look for miele.json in current directory or config location
 	credsFile := "miele.json"
+	if cfgFile := viper.ConfigFileUsed(); cfgFile != "" {
+		if _, err := os.Stat(credsFile); errors.Is(err, os.ErrNotExist) {
+			credsFile = filepath.Join(filepath.Dir(cfgFile), "miele.json")
+		}
+	}
 
 	if _, err := os.Stat(credsFile); errors.Is(err, os.ErrNotExist) {
 		log.WARN.Println("miele.json not found, skipping Miele integration")
 		return nil // Not configured
 	}
+
+	log.INFO.Printf("loading Miele credentials from: %s", credsFile)
 
 	// Redirect URI should preferably be the external URL of the evcc instance
 	externalURL := viper.GetString("network.externalurl")
