@@ -129,3 +129,23 @@ func (c *Controller) GetDevices(ctx context.Context) ([]miele.Device, error) {
 
 	return res, nil
 }
+
+// StartDevice initiates the Start action
+func (c *Controller) StartDevice(ctx context.Context, deviceID string) error {
+	c.mu.Lock()
+	ts := c.tokenSource
+	c.mu.Unlock()
+
+	if ts == nil {
+		return errors.New("not connected")
+	}
+
+	token, err := ts.Token()
+	if err != nil {
+		return err
+	}
+
+	// 1 corresponds to Start in the Miele action schema
+	action := map[string]any{"processAction": 1}
+	return c.client.Action(ctx, token, deviceID, action)
+}

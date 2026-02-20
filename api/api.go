@@ -296,3 +296,23 @@ type Redactor interface {
 type Messenger interface {
 	Send(title, msg string)
 }
+
+// WhitegoodState represents the appliance status
+type WhitegoodState string
+
+const (
+	WhitegoodStateIdle     WhitegoodState = "idle"
+	WhitegoodStateRunning  WhitegoodState = "running"
+	WhitegoodStateFinished WhitegoodState = "finished"
+	WhitegoodStateError    WhitegoodState = "error"
+)
+
+// Whitegood models a shiftable home appliance
+type Whitegood interface {
+	// Status returns the current operational state
+	Status() (WhitegoodState, error)
+	// Start starts the appliance
+	Start() error
+	// RequiredPower returns the minimum solar surplus needed to start
+	RequiredPower() float64
+}

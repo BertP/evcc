@@ -12,10 +12,12 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/evcc-io/evcc/api"
 	"github.com/evcc-io/evcc/api/globalconfig"
 	"github.com/evcc-io/evcc/charger/ocpp"
 	"github.com/evcc-io/evcc/core"
 	"github.com/evcc-io/evcc/core/keys"
+	wgcore "github.com/evcc-io/evcc/core/whitegood"
 	hemsapi "github.com/evcc-io/evcc/hems/hems"
 	"github.com/evcc-io/evcc/messenger"
 	"github.com/evcc-io/evcc/server"
@@ -26,6 +28,7 @@ import (
 	"github.com/evcc-io/evcc/server/updater"
 	"github.com/evcc-io/evcc/util"
 	"github.com/evcc-io/evcc/util/auth"
+	"github.com/evcc-io/evcc/util/config"
 	"github.com/evcc-io/evcc/util/pipe"
 	"github.com/evcc-io/evcc/util/sponsor"
 	"github.com/evcc-io/evcc/util/telemetry"
@@ -452,6 +455,20 @@ func runRoot(cmd *cobra.Command, args []string) {
 		// set channels
 		site.DumpConfig()
 		site.Prepare(valueChan, pushChan)
+
+		// start Whitegoods coordinator
+		wgs := config.Whitegoods().Devices()
+		if len(wgs) > 0 {
+			var apiWgs []api.Whitegood
+			var wgNames []string
+			for _, d := range wgs {
+				apiWgs = append(apiWgs, d.Instance())
+				wgNames = append(wgNames, d.Config().Name)
+			}
+			wgCoord := wgcore.NewCoordinator(site, apiWgs, wgNames)
+			go wgCoord.Run(stopC)
+			httpd.RegisterWhitegoodsHandler(wgCoord)
+		}
 
 		httpd.RegisterSiteHandlers(site)
 

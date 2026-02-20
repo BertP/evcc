@@ -2,6 +2,7 @@ package miele
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/evcc-io/evcc/util"
@@ -95,4 +96,18 @@ func (c *Client) GetDevices(ctx context.Context, token *oauth2.Token) (map[strin
 	helper := &request.Helper{Client: client}
 	err = helper.DoJSON(req, &res)
 	return res, err
+}
+
+// Action issues an action command to the Miele appliance
+func (c *Client) Action(ctx context.Context, token *oauth2.Token, deviceID string, action map[string]any) error {
+	url := fmt.Sprintf("%s/devices/%s/actions", ApiURL, deviceID)
+
+	req, err := request.New(http.MethodPut, url, request.MarshalJSON(action), request.AcceptJSON)
+	if err != nil {
+		return err
+	}
+
+	client := c.Client(ctx, token)
+	helper := &request.Helper{Client: client}
+	return helper.DoJSON(req, nil)
 }

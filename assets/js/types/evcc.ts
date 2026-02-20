@@ -33,6 +33,12 @@ export interface InfluxConfig {
   org: any;
 }
 
+export interface Whitegood {
+  name: string;
+  status: string; // "idle", "running", "error", etc.
+  requiredPower: number;
+}
+
 export interface HemsConfig {
   type: string;
 }
@@ -94,6 +100,7 @@ export interface State {
   config?: string;
   database?: string;
   ocpp?: Ocpp;
+  whitegoods?: Whitegood[];
 }
 
 export interface ConfigStatus<C, S> {

@@ -54,6 +54,7 @@ import (
 	"github.com/evcc-io/evcc/util/sponsor"
 	"github.com/evcc-io/evcc/util/templates"
 	"github.com/evcc-io/evcc/vehicle"
+	"github.com/evcc-io/evcc/whitegood"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/libp2p/zeroconf/v2"
@@ -361,6 +362,38 @@ func configureChargers(static []config.Named, names ...string) error {
 			}
 
 			return configurableInstance("charger", &conf, charger.NewFromConfig, config.Chargers())
+		})
+	}
+
+	return eg.Wait()
+}
+
+func configureWhitegoods(static []config.Named) error {
+	var eg errgroup.Group
+
+	for i, cc := range static {
+		if cc.Name == "" {
+			return fmt.Errorf("cannot create whitegood %d: missing name", i+1)
+		}
+
+		if err := nameValid(cc.Name); err != nil {
+			log.WARN.Printf("create whitegood %d: %v", i+1, err)
+		}
+
+		eg.Go(func() error {
+			return staticInstance("whitegood", cc, whitegood.NewFromConfig, config.Whitegoods())
+		})
+	}
+
+	// append devices from database
+	configurable, err := config.ConfigurationsByClass(templates.Whitegood)
+	if err != nil {
+		return err
+	}
+
+	for _, conf := range configurable {
+		eg.Go(func() error {
+			return configurableInstance("whitegood", &conf, whitegood.NewFromConfig, config.Whitegoods())
 		})
 	}
 
@@ -1014,6 +1047,10 @@ func configureDevices(conf globalconfig.All) error {
 
 	if err := configureCircuits(&conf.Circuits); err != nil {
 		errs = append(errs, &ClassError{ClassCircuit, err})
+	}
+
+	if err := configureWhitegoods(conf.Whitegoods); err != nil {
+		errs = append(errs, &ClassError{ClassWhitegood, err})
 	}
 
 	return joinErrors(errs...)

@@ -280,6 +280,27 @@ func (site *Site) GetResidualPower() float64 {
 	return site.ResidualPower
 }
 
+// GetGridPower returns the current grid power
+func (site *Site) GetGridPower() float64 {
+	site.RLock()
+	defer site.RUnlock()
+	return site.gridPower
+}
+
+// GetPvPower returns the current PV power
+func (site *Site) GetPvPower() float64 {
+	site.RLock()
+	defer site.RUnlock()
+	return site.pvPower
+}
+
+// GetBatteryPower returns the current battery power
+func (site *Site) GetBatteryPower() float64 {
+	site.RLock()
+	defer site.RUnlock()
+	return site.battery.Power
+}
+
 // SetResidualPower sets the ResidualPower
 func (site *Site) SetResidualPower(power float64) error {
 	site.log.DEBUG.Println("set residual power:", power)

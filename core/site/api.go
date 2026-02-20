@@ -61,6 +61,10 @@ type API interface {
 	GetResidualPower() float64
 	SetResidualPower(float64) error
 
+	GetGridPower() float64
+	GetPvPower() float64
+	GetBatteryPower() float64
+
 	//
 	// tariffs and costs
 	//

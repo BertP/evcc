@@ -70,6 +70,11 @@
 				:selectedId="selectedLoadpointId"
 				@id-changed="selectedLoadpointChanged"
 			/>
+			<Whitegoods
+				v-if="whitegoods && whitegoods.length > 0"
+				:whitegoods="whitegoods"
+				class="mt-4"
+			/>
 			<Footer v-bind="footer"></Footer>
 		</div>
 	</div>
@@ -81,9 +86,10 @@ import TopNavigationArea from "../Top/TopNavigationArea.vue";
 import Energyflow from "../Energyflow/Energyflow.vue";
 import HemsWarning from "../HemsWarning.vue";
 import Loadpoints from "../Loadpoints/Loadpoints.vue";
+import Whitegoods from "../Whitegoods/Whitegoods.vue";
 import Footer from "../Footer/Footer.vue";
 import formatter from "@/mixins/formatter";
-import collector from "@/mixins/collector.ts";
+import collector from "@/mixins/collector";
 import WelcomeIcons from "./WelcomeIcons.vue";
 import { defineComponent, type PropType } from "vue";
 import type {
@@ -106,6 +112,7 @@ export default defineComponent({
 	name: "Site",
 	components: {
 		Loadpoints,
+		Whitegoods,
 		Energyflow,
 		Footer,
 		HemsWarning,
@@ -139,6 +146,7 @@ export default defineComponent({
 		bufferStartSoc: Number,
 		siteTitle: String,
 		vehicles: Object,
+		whitegoods: { type: Array, default: () => [] },
 		authProviders: { type: Object as PropType<AuthProviders>, default: () => ({}) },
 		currency: { type: String as PropType<CURRENCY> },
 		statistics: Object,

@@ -962,6 +962,16 @@
     "title": "Authentication"
   },
   "main": {
+    "whitegoods": {
+      "requiredPower": "Required Power",
+      "startNow": "Start Now",
+      "starting": "Starting...",
+      "status": {
+        "idle": "Idle",
+        "running": "Running",
+        "error": "Error"
+      }
+    },
     "chargingPlan": {
       "active": "Active",
       "addRepeatingPlan": "Add repeating plan",

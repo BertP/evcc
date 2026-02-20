@@ -63,6 +63,7 @@ type All struct {
 	Site            map[string]any
 	Loadpoints      []config.Named
 	Circuits        []config.Named
+	Whitegoods      []config.Named
 }
 
 type Javascript struct {

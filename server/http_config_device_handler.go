@@ -20,6 +20,7 @@ import (
 	"github.com/evcc-io/evcc/util/config"
 	"github.com/evcc-io/evcc/util/templates"
 	"github.com/evcc-io/evcc/vehicle"
+	"github.com/evcc-io/evcc/whitegood"
 	"github.com/gorilla/mux"
 	"go.yaml.in/yaml/v4"
 )
@@ -330,7 +331,7 @@ func newDeviceHandler(w http.ResponseWriter, r *http.Request) {
 		conf, err = newDevice(ctx, class, req, messenger.NewFromConfig, config.Messengers(), force)
 
 	case templates.Whitegood:
-		conf, err = newDevice(ctx, class, req, charger.NewFromConfig, config.Whitegoods(), force)
+		conf, err = newDevice(ctx, class, req, whitegood.NewFromConfig, config.Whitegoods(), force)
 	}
 
 	if err != nil {
@@ -417,7 +418,7 @@ func updateDeviceHandler(w http.ResponseWriter, r *http.Request) {
 		err = updateDevice(ctx, id, class, req, messenger.NewFromConfig, config.Messengers(), force)
 
 	case templates.Whitegood:
-		err = updateDevice(ctx, id, class, req, charger.NewFromConfig, config.Whitegoods(), force)
+		err = updateDevice(ctx, id, class, req, whitegood.NewFromConfig, config.Whitegoods(), force)
 	}
 
 	setConfigDirty()
@@ -643,6 +644,9 @@ func testConfigHandler(w http.ResponseWriter, r *http.Request) {
 
 	case templates.Messenger:
 		instance, err = testConfig(ctx, id, class, req, messenger.NewFromConfig, config.Messengers())
+
+	case templates.Whitegood:
+		instance, err = testConfig(ctx, id, class, req, whitegood.NewFromConfig, config.Whitegoods())
 	}
 
 	if err != nil {

@@ -962,6 +962,16 @@
     "title": "Authentifizierung"
   },
   "main": {
+    "whitegoods": {
+      "requiredPower": "Benötigte Leistung",
+      "startNow": "Jetzt starten",
+      "starting": "Startet...",
+      "status": {
+        "idle": "Bereit",
+        "running": "Läuft",
+        "error": "Fehler"
+      }
+    },
     "chargingPlan": {
       "active": "Aktiv",
       "addRepeatingPlan": "Wiederholenden Plan hinzufügen",
