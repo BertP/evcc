@@ -182,12 +182,12 @@
 						</template>
 						<template #tags>
 							<DeviceTags :tags="mieleTags" />
-							<template v-if="miele.connected && mieleDevices.length > 0">
+							<template v-if="miele?.connected && mieleDevices.length > 0">
 								<hr class="my-3" />
 								<div v-for="device in mieleDevices" :key="device.ident?.deviceSN" class="mb-2">
 									<div class="d-flex justify-content-between align-items-center">
 										<span v-if="device.ident">
-											<strong>{{ applianceType(device.ident.typ?.value_raw) }}</strong>
+											<strong>{{ applianceType(device.ident.type?.value_raw) }}</strong>
 											<br />
 											<small class="text-muted">{{ device.ident.deviceName || device.ident.deviceSN }}</small>
 										</span>
@@ -196,6 +196,10 @@
 										</button>
 									</div>
 								</div>
+							</template>
+							<template v-else-if="miele?.connected">
+								<hr class="my-3" />
+								<div class="text-muted small">No appliances discovered.</div>
 							</template>
 						</template>
 					</DeviceCard>
