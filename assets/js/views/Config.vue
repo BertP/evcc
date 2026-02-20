@@ -204,6 +204,21 @@
 						</template>
 						<template #tags>
 							<DeviceTags :tags="mieleTags" />
+							<template v-if="miele.connected && mieleDevices.length > 0">
+								<hr class="my-3" />
+								<div v-for="device in mieleDevices" :key="device.ident.deviceSN" class="mb-2">
+									<div class="d-flex justify-content-between align-items-center">
+										<span>
+											<strong>{{ applianceType(device.ident.typ.value_raw) }}</strong>
+											<br />
+											<small class="text-muted">{{ device.ident.deviceName || device.ident.deviceSN }}</small>
+										</span>
+										<button class="btn btn-sm btn-outline-primary" @click.stop="configureMieleDevice(device)">
+											{{ $t("config.general.add") }}
+										</button>
+									</div>
+								</div>
+							</template>
 						</template>
 					</DeviceCard>
 				</div>
@@ -659,7 +674,7 @@ export default defineComponent({
 		},
 		mieleTags(): DeviceTags {
 			const connected = this.miele?.connected;
-			const tags: DeviceTags = {
+			return {
 				connected: {
 					value: connected ? "Connected" : "Disconnected",
 					options: {
@@ -668,10 +683,6 @@ export default defineComponent({
 					},
 				},
 			};
-			if (this.mieleDevices?.length > 0) {
-				tags["appliances"] = { value: this.mieleDevices.length };
-			}
-			return tags;
 		},
 		influxTags(): DeviceTags {
 			const { url, database, org } = store.state?.influx || {};
