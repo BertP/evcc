@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   evcc:
     # Use the official image for the server deployment or build locally
