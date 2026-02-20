@@ -268,7 +268,7 @@
 					<DeviceCard
 						title="Miele"
 						:error="false"
-						:unconfigured="!miele.connected"
+						:unconfigured="!miele?.connected"
 						data-testid="miele"
 						editable
 						@edit="handleMieleAction"
@@ -284,7 +284,7 @@
 							<DeviceTags :tags="mieleTags" />
 						</template>
 						<template #extra>
-							<div v-if="miele.connected && mieleDevices.length > 0" class="mt-3 px-3 pb-3">
+							<div v-if="miele?.connected && mieleDevices?.length > 0" class="mt-3 px-3 pb-3">
 								<p class="small text-muted mb-2">Discovered Appliances:</p>
 								<div class="list-group list-group-flush border rounded">
 									<div
@@ -656,16 +656,17 @@ export default defineComponent({
 			};
 		},
 		mieleTags(): DeviceTags {
+			const connected = this.miele?.connected;
 			const tags: DeviceTags = {
 				connected: {
-					value: this.miele.connected ? "Connected" : "Disconnected",
+					value: connected ? "Connected" : "Disconnected",
 					options: {
-						label: this.miele.connected ? "Connected" : "Disconnected",
-						class: this.miele.connected ? "text-success" : "text-danger",
+						label: connected ? "Connected" : "Disconnected",
+						class: connected ? "text-success" : "text-danger",
 					},
 				},
 			};
-			if (this.mieleDevices.length > 0) {
+			if (this.mieleDevices?.length > 0) {
 				tags["appliances"] = { value: this.mieleDevices.length };
 			}
 			return tags;
@@ -857,11 +858,12 @@ export default defineComponent({
 		async loadMiele() {
 			try {
 				const response = await api.get("/miele/status");
-				this.miele = response.data;
+				this.miele = response.data || { connected: false };
 				if (this.miele.connected) {
 					await this.loadMieleDevices();
 				}
 			} catch (e) {
+				this.miele = { connected: false };
 				console.error("failed to load miele status", e);
 			}
 		},
@@ -885,9 +887,8 @@ export default defineComponent({
 			const type = this.applianceType(device.ident.typ.value_raw);
 			const title = device.ident.deviceName || `${type} ${device.ident.deviceSN}`;
 			openModal("whitegood", {
-				template: "miele",
-				device: device.ident.deviceSN,
-				title: title,
+				type: "miele",
+				choices: [device.ident.deviceSN, title],
 			});
 		},
 		async loadLoadpoints() {

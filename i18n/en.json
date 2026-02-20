@@ -212,6 +212,7 @@
       "optional": "optional"
     },
     "general": {
+      "add": "Add",
       "applyAndClose": "Apply & close",
       "authPerform": "Connect with {provider}",
       "authPerformHint": "Will open in a new tab. Return here to continue.",

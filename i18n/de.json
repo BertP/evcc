@@ -212,6 +212,7 @@
       "optional": "optional"
     },
     "general": {
+      "add": "Hinzufügen",
       "applyAndClose": "Übernehmen & schließen",
       "authPerform": "Mit {provider} verbinden",
       "authPerformHint": "Öffnet ein neues Tab. Anschließend hier weiter machen.",
