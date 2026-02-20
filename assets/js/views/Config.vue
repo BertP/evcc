@@ -166,6 +166,40 @@
 				<h2 class="my-4 mt-5">{{ $t("config.section.whitegoods") }}</h2>
 				<div class="p-0 config-list">
 					<DeviceCard
+						:title="'Miele'"
+						:error="false"
+						:unconfigured="!miele?.connected"
+						data-testid="miele"
+						editable
+						@edit="handleMieleAction"
+					>
+						<template #icon>
+							<span
+								class="d-flex align-items-center justify-content-center bg-dark text-white rounded-circle"
+								style="width: 24px; height: 24px; font-weight: bold"
+								>M</span
+							>
+						</template>
+						<template #tags>
+							<DeviceTags :tags="mieleTags" />
+							<template v-if="miele.connected && mieleDevices.length > 0">
+								<hr class="my-3" />
+								<div v-for="device in mieleDevices" :key="device.ident?.deviceSN" class="mb-2">
+									<div class="d-flex justify-content-between align-items-center">
+										<span v-if="device.ident">
+											<strong>{{ applianceType(device.ident.typ?.value_raw) }}</strong>
+											<br />
+											<small class="text-muted">{{ device.ident.deviceName || device.ident.deviceSN }}</small>
+										</span>
+										<button class="btn btn-sm btn-outline-primary" @click.stop="configureMieleDevice(device)">
+											{{ $t("config.general.add") }}
+										</button>
+									</div>
+								</div>
+							</template>
+						</template>
+					</DeviceCard>
+					<DeviceCard
 						v-for="whitegood in whitegoods"
 						:key="whitegood.name"
 						:title="whitegood.config?.title || whitegood.name"
@@ -187,40 +221,6 @@
 						</template>
 					</DeviceCard>
 
-					<DeviceCard
-						:title="'Miele'"
-						:error="false"
-						:unconfigured="!miele?.connected"
-						data-testid="miele"
-						editable
-						@edit="handleMieleAction"
-					>
-						<template #icon>
-							<span
-								class="d-flex align-items-center justify-content-center bg-dark text-white rounded-circle"
-								style="width: 24px; height: 24px; font-weight: bold"
-								>M</span
-							>
-						</template>
-						<template #tags>
-							<DeviceTags :tags="mieleTags" />
-							<template v-if="miele.connected && mieleDevices.length > 0">
-								<hr class="my-3" />
-								<div v-for="device in mieleDevices" :key="device.ident.deviceSN" class="mb-2">
-									<div class="d-flex justify-content-between align-items-center">
-										<span>
-											<strong>{{ applianceType(device.ident.typ.value_raw) }}</strong>
-											<br />
-											<small class="text-muted">{{ device.ident.deviceName || device.ident.deviceSN }}</small>
-										</span>
-										<button class="btn btn-sm btn-outline-primary" @click.stop="configureMieleDevice(device)">
-											{{ $t("config.general.add") }}
-										</button>
-									</div>
-								</div>
-							</template>
-						</template>
-					</DeviceCard>
 				</div>
 
 				<h2 class="my-4 mt-5">{{ $t("config.section.integrations") }}</h2>
