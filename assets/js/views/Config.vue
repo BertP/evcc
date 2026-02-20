@@ -202,6 +202,9 @@
 								>M</span
 							>
 						</template>
+						<template #tags>
+							<DeviceTags :tags="mieleTags" />
+						</template>
 					</DeviceCard>
 				</div>
 
