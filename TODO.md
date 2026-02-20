@@ -27,5 +27,7 @@
 - [x] Display the current **connection status** on the integration card
 - [x] Provide an option to **disconnect** the API connection via the integration card
 
+## Debug / Test
+- [x] Implement detailed debug and log information
 
 ## Step 2: Build Miele Appliance Konfiguration Card Connection

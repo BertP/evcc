@@ -18,12 +18,15 @@ const (
 
 type Client struct {
 	*request.Helper
+	log  *util.Logger
 	conf *oauth2.Config
 }
 
 func NewClient(clientID, clientSecret, redirectURI string) *Client {
+	log := util.NewLogger("miele")
 	return &Client{
-		Helper: request.NewHelper(util.NewLogger("miele")),
+		Helper: request.NewHelper(log),
+		log:    log,
 		conf: &oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
@@ -50,6 +53,7 @@ func (c *Client) config(redirectURI string) *oauth2.Config {
 }
 
 func (c *Client) Exchange(ctx context.Context, redirectURI, code string) (*oauth2.Token, error) {
+	c.log.DEBUG.Printf("exchanging code (redirect: %s)", redirectURI)
 	return c.config(redirectURI).Exchange(ctx, code)
 }
 
@@ -63,5 +67,6 @@ func (c *Client) Client(ctx context.Context, token *oauth2.Token) *http.Client {
 }
 
 func (c *Client) AuthCodeURL(redirectURI, state string, opts ...oauth2.AuthCodeOption) string {
+	c.log.DEBUG.Printf("generating auth code URL (redirect: %s)", redirectURI)
 	return c.config(redirectURI).AuthCodeURL(state, opts...)
 }

@@ -42,6 +42,7 @@ func NewController(path, redirectURI string) (*Controller, error) {
 	// load token from database
 	var token oauth2.Token
 	if err := settings.Json(mieleTokenKey, &token); err == nil {
+		c.log.DEBUG.Println("loaded Miele token from database")
 		c.SetToken(&token)
 	}
 
@@ -56,9 +57,11 @@ func (c *Controller) GetAuthURL(redirectURI, state string) string {
 func (c *Controller) Exchange(ctx context.Context, redirectURI, code string) (*oauth2.Token, error) {
 	token, err := c.client.Exchange(ctx, redirectURI, code)
 	if err != nil {
+		c.log.ERROR.Printf("failed to exchange code: %v", err)
 		return nil, err
 	}
 
+	c.log.DEBUG.Println("code exchange successful")
 	c.SetToken(token)
 	return token, nil
 }
@@ -72,6 +75,8 @@ func (c *Controller) SetToken(token *oauth2.Token) {
 	// persist token
 	if err := settings.SetJson(mieleTokenKey, token); err != nil {
 		c.log.ERROR.Printf("failed to persist token: %v", err)
+	} else {
+		c.log.DEBUG.Println("persisted Miele token to database")
 	}
 }
 
@@ -88,5 +93,7 @@ func (c *Controller) Logout() {
 	c.connected = false
 	if err := settings.Delete(mieleTokenKey); err != nil {
 		c.log.ERROR.Printf("failed to delete token: %v", err)
+	} else {
+		c.log.DEBUG.Println("deleted Miele token from database")
 	}
 }

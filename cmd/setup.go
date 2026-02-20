@@ -1267,23 +1267,29 @@ func configureMiele(httpd *server.HTTPd) error {
 		b := make([]byte, 16)
 		rand.Read(b)
 		state := base64.URLEncoding.EncodeToString(b)
-		http.Redirect(w, r, c.GetAuthURL(getRedirectURI(r), state), http.StatusFound)
+		redirectURI := getRedirectURI(r)
+		log.DEBUG.Printf("GET /api/miele/login (redirect: %s)", redirectURI)
+		http.Redirect(w, r, c.GetAuthURL(redirectURI, state), http.StatusFound)
 	}).Methods("GET")
 
 	api.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
+		log.DEBUG.Println("POST /api/miele/logout")
 		c.Logout()
 		w.WriteHeader(http.StatusNoContent)
 	}).Methods("POST")
 
 	api.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
+		log.DEBUG.Println("GET /api/miele/callback")
 		code := r.URL.Query().Get("code")
 		if code == "" {
+			log.ERROR.Println("callback failed: missing code")
 			http.Error(w, "missing code", http.StatusBadRequest)
 			return
 		}
 
 		_, err := c.Exchange(r.Context(), getRedirectURI(r), code)
 		if err != nil {
+			log.ERROR.Printf("callback failed: %v", err)
 			http.Error(w, fmt.Sprintf("failed to exchange code: %v", err), http.StatusInternalServerError)
 			return
 		}
@@ -1292,7 +1298,10 @@ func configureMiele(httpd *server.HTTPd) error {
 	}).Methods("GET")
 
 	api.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {
-		status := map[string]bool{"connected": c.IsConnected()}
+		log.DEBUG.Println("GET /api/miele/status")
+		status := map[string]any{
+			"connected": c.IsConnected(),
+		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(status)
 	}).Methods("GET")
