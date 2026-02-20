@@ -19,3 +19,17 @@ services:
     network_mode: "host" # Recommended for mDNS and hardware integration discovery
     environment:
       - EVCC_DATABASE_DSN=/var/lib/evcc/evcc.db
+    develop:
+      watch:
+        - path: evcc.yaml
+          action: restart
+        - path: miele.json
+          action: sync
+          target: /app/miele.json
+        - path: .
+          action: rebuild
+          ignore:
+            - node_modules/
+            - .git/
+            - data/
+            - dist/
