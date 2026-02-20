@@ -13,6 +13,7 @@ params:
     help:
       de: Seriennummer des Geräts
       en: Serial number of the appliance
+    service: miele/devices
 render: |
   type: miele
   device: {{ .device }}

@@ -47,12 +47,23 @@ export default defineComponent({
 	emits: ["changed", "close"],
 	data() {
 		return {
-			initialValues,
 		};
 	},
 	computed: {
 		id(): number | undefined {
 			return getModal("whitegood")?.id;
+		},
+		initialValues(): DeviceValues {
+			const modal = getModal("whitegood");
+			if (modal?.template) {
+				return {
+					...initialValues,
+					template: modal.template,
+					deviceProduct: modal.template,
+					...modal.values,
+				};
+			}
+			return initialValues;
 		},
 		modalTitle(): string {
 			if (this.isNew) {

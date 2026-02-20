@@ -884,19 +884,11 @@ export default defineComponent({
 		async configureMieleDevice(device: any) {
 			const type = this.applianceType(device.ident.typ.value_raw);
 			const title = device.ident.deviceName || `${type} ${device.ident.deviceSN}`;
-			const data = {
+			openModal("whitegood", {
 				template: "miele",
 				device: device.ident.deviceSN,
 				title: title,
-			};
-
-			try {
-				await api.post("/config/devices/whitegood", data);
-				await this.loadWhitegoods();
-				await this.loadDirty();
-			} catch (e) {
-				console.error("failed to configure miele device", e);
-			}
+			});
 		},
 		async loadLoadpoints() {
 			this.loadpoints = (await this.loadConfig("loadpoints")) || [];
