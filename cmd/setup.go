@@ -3,6 +3,8 @@ package cmd
 import (
 	"cmp"
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -1223,8 +1225,6 @@ func isExperimental() bool {
 // setup Miele
 func configureMiele(httpd *server.HTTPd) error {
 	// Look for miele.json in current directory or config location
-	// We'll trust LoadCredentials to handle file finding if we give it a relative path working from execution dir
-	// or we could check common locations.
 	credsFile := "miele.json"
 
 	if _, err := os.Stat(credsFile); errors.Is(err, os.ErrNotExist) {
@@ -1232,17 +1232,12 @@ func configureMiele(httpd *server.HTTPd) error {
 		return nil // Not configured
 	}
 
-	// This is a bit hacky to construct the callback URL from the config,
-	// assuming standard port/host if not easily accessible here without plumbing.
-	// But we have httpd.Addr, though that might be :7070.
-	// We really need the external URL.
-	// Docker might need explicit configuration for this.
-	// For now, we use a placeholder or derive from network config if passed,
-	// but this function signature only has httpd.
-	// Let's assume the user configures the RedirectURI in miele.json too or we use a default relative to request?
-	// The Controller expects a redirectURI.
-	// Let's use a sane default for now:
-	redirectURI := "http://localhost:7070/api/miele/callback"
+	// Redirect URI should preferably be the external URL of the evcc instance
+	externalURL := viper.GetString("network.externalurl")
+	if externalURL == "" {
+		externalURL = "http://localhost:7070"
+	}
+	redirectURI := fmt.Sprintf("%s/api/miele/callback", strings.TrimSuffix(externalURL, "/"))
 
 	c, err := miele.NewController(credsFile, redirectURI)
 	if err != nil {
@@ -1256,9 +1251,16 @@ func configureMiele(httpd *server.HTTPd) error {
 	api := router.PathPrefix("/api/miele").Subrouter()
 
 	api.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		state := "random-state" // TODO: Secure state generation
+		b := make([]byte, 16)
+		rand.Read(b)
+		state := base64.URLEncoding.EncodeToString(b)
 		http.Redirect(w, r, c.GetAuthURL(state), http.StatusFound)
 	}).Methods("GET")
+
+	api.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
+		c.Logout()
+		w.WriteHeader(http.StatusNoContent)
+	}).Methods("POST")
 
 	api.HandleFunc("/callback", func(w http.ResponseWriter, r *http.Request) {
 		code := r.URL.Query().Get("code")
@@ -1267,17 +1269,13 @@ func configureMiele(httpd *server.HTTPd) error {
 			return
 		}
 
-		token, err := c.Exchange(r.Context(), code)
+		_, err := c.Exchange(r.Context(), code)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("failed to exchange code: %v", err), http.StatusInternalServerError)
 			return
 		}
 
-		// TODO: Save token persistantly?
-		// For now just in memory in controller
-		_ = token
-
-		fmt.Fprintf(w, "Miele Connected! You can close this window.")
+		http.Redirect(w, r, "/#/config", http.StatusFound)
 	}).Methods("GET")
 
 	api.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {

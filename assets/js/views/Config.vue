@@ -873,9 +873,18 @@ export default defineComponent({
 			await this.loadDirty();
 			this.updateValues();
 		},
-		handleMieleAction() {
+		async handleMieleAction() {
 			if (!this.miele.connected) {
 				window.location.href = "/api/miele/login";
+			} else {
+				if (confirm("Disconnect Miele API?")) {
+					try {
+						await api.post("/miele/logout");
+						await this.loadMiele();
+					} catch (e) {
+						console.error("failed to logout miele", e);
+					}
+				}
 			}
 		},
 		async chargerChanged() {

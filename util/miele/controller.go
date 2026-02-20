@@ -5,11 +5,14 @@ import (
 	"sync"
 
 	"github.com/evcc-io/evcc/provider/miele"
+	"github.com/evcc-io/evcc/server/db/settings"
 	"github.com/evcc-io/evcc/util"
 	"golang.org/x/oauth2"
 )
 
 var Instance *Controller
+
+const mieleTokenKey = "miele_token"
 
 type Controller struct {
 	mu          sync.Mutex
@@ -36,6 +39,12 @@ func NewController(path, redirectURI string) (*Controller, error) {
 		client: client,
 	}
 
+	// load token from database
+	var token oauth2.Token
+	if err := settings.Json(mieleTokenKey, &token); err == nil {
+		c.SetToken(&token)
+	}
+
 	return c, nil
 }
 
@@ -59,10 +68,25 @@ func (c *Controller) SetToken(token *oauth2.Token) {
 	defer c.mu.Unlock()
 	c.tokenSource = c.client.TokenSource(context.Background(), token)
 	c.connected = true
+
+	// persist token
+	if err := settings.SetJson(mieleTokenKey, token); err != nil {
+		c.log.ERROR.Printf("failed to persist token: %v", err)
+	}
 }
 
 func (c *Controller) IsConnected() bool {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	return c.connected
+}
+
+func (c *Controller) Logout() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.tokenSource = nil
+	c.connected = false
+	if err := settings.Delete(mieleTokenKey); err != nil {
+		c.log.ERROR.Printf("failed to delete token: %v", err)
+	}
 }
